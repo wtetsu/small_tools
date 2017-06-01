@@ -1,10 +1,6 @@
 """This is a implementation of multithreading design pattern Producer-Consumer."""
 # -*- coding: utf-8 -*-
 
-# acquire()
-# locked()
-# release()
-
 import thread
 import threading
 import time
@@ -15,26 +11,28 @@ class Table:
     def __init__(self, max):
         self.max = max
         self.lock = threading.Lock()
-        self.lock_wait = threading.Lock()
+        self.lock_wait = threading.Condition()
         self.cakes = collections.deque()
 
     def put(self, cake):
+        while len(self.cakes) >= self.max:
+            with self.lock_wait:
+                self.lock_wait.wait()
         with self.lock:
-            while len(self.cakes) >= self.max:
-                pass
             self.cakes.append(cake)
-            # if self.lock_wait.locked():
-            #     print("release@")
-            #     self.lock_wait.release()
+            print("appended:" + cake)
+        with self.lock_wait:
+            self.lock_wait.notifyAll()
 
     def take(self):
+        while len(self.cakes) <= 0:
+            with self.lock_wait:
+                self.lock_wait.wait()
         with self.lock:
-            while len(self.cakes) <= 0:
-                pass
             cake = self.cakes.popleft()
-            # if self.lock_wait.locked():
-            #     print("release!")
-            #     self.lock_wait.release()
+            print("taken:" + cake)
+        with self.lock_wait:
+            self.lock_wait.notifyAll()
         return cake
 
 class Numbering:
