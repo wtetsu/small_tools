@@ -16,18 +16,18 @@ class ReadWriteLock:
         self._lock_wait = threading.Condition()
 
     def read_lock(self):
-        with self._lock:
-            while self._writing_writers > 0 or (self._prefer_writer and self._waiting_writers > 0):
-                with self._lock_wait:
-                    self._lock_wait.wait()
-            self._reading_readers += 1
+        #with self._lock:
+        while self._writing_writers > 0 or (self._prefer_writer and self._waiting_writers > 0):
+            with self._lock_wait:
+                self._lock_wait.wait()
+        self._reading_readers += 1
 
     def read_unlock(self):
-        with self._lock:
-            self._reading_readers -= 1
-            self._prefer_writer = True
-            with self._lock_wait:
-                self._lock_wait.notifyAll()
+        #with self._lock:
+        self._reading_readers -= 1
+        self._prefer_writer = True
+        with self._lock_wait:
+            self._lock_wait.notifyAll()
 
     def write_lock(self):
         with self._lock:
@@ -43,7 +43,7 @@ class ReadWriteLock:
     def write_unlock(self):
         with self._lock:
             self._writing_writers -= 1
-            self._prefer_writer = false
+            self._prefer_writer = False
             with self._lock_wait:
                 self._lock_wait.notifyAll()
 
@@ -65,24 +65,25 @@ class Data:
 
     def write(self, ch):
         self._lock.write_lock()
+        print("writing...")
         try:
             for i in xrange(0, len(self._data)):
                 self._data[i] = ch
-                time.sleep(0.01)
+                time.sleep(0.5)
         finally:
             self._lock.write_unlock()
 
 def reader_thread(data):
     while True:
+        time.sleep(random.random())
         r = data.read()
         print(r)
-        time.sleep(random.random())
 
 def write_thread(data):
     i = 0;
     while True:
+        time.sleep(3+random.random())
         data.write(str(i))
-        time.sleep(random.random())
         i += 1
 
 if __name__ == "__main__":
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     thread.start_new_thread(reader_thread, (data,))
     thread.start_new_thread(reader_thread, (data,))
     thread.start_new_thread(write_thread, (data,))
-    thread.start_new_thread(write_thread, (data,))
-    thread.start_new_thread(write_thread, (data,))
+    #thread.start_new_thread(write_thread, (data,))
+    #thread.start_new_thread(write_thread, (data,))
     time.sleep(1000000)
 
