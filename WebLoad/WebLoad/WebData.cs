@@ -9,6 +9,7 @@ namespace WebLoad
         public string CookieUrl { get; set; }
         public string PostData { get; set; }
         public CookieCollection Cookies { get; set; }
+        public int Sleep { get; set; }
 
         public static WebData ParseFile(string dataFile)
         {
@@ -47,6 +48,9 @@ namespace WebLoad
                                 break;
                             case "postdata":
                                 result.PostData = val;
+                                break;
+                            case "sleep":
+                                result.Sleep = int.Parse(val);
                                 break;
                         }
                     }
