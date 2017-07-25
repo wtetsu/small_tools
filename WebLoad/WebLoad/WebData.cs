@@ -27,31 +27,35 @@ namespace WebLoad
                     }
 
                     string[] arr = line.Split('\t');
-                    string key = arr[0];
-                    string val = arr[1];
 
-                    if (key.StartsWith("cookie:"))
+                    if (arr.Length >= 2)
                     {
-                        string[] c = key.Split(':');
-                        string name = c[1];
+                        string key = arr[0];
+                        string val = arr[1];
 
-                        var newCookie = new Cookie(name, val);
-                        result.Cookies.Add(newCookie);
-                    }
-                    else
-                    {
-                        switch (key)
+                        if (key.StartsWith("cookie:"))
                         {
-                            case "url":
-                                result.Url = val;
-                                result.CookieUrl = result.Url.Substring(0, result.Url.IndexOf("/", 7));
-                                break;
-                            case "postdata":
-                                result.PostData = val;
-                                break;
-                            case "sleep":
-                                result.Sleep = int.Parse(val);
-                                break;
+                            string[] c = key.Split(':');
+                            string name = c[1];
+
+                            var newCookie = new Cookie(name, val);
+                            result.Cookies.Add(newCookie);
+                        }
+                        else
+                        {
+                            switch (key)
+                            {
+                                case "url":
+                                    result.Url = val;
+                                    result.CookieUrl = result.Url.Substring(0, result.Url.IndexOf("/", 7));
+                                    break;
+                                case "postdata":
+                                    result.PostData = val;
+                                    break;
+                                case "sleep":
+                                    result.Sleep = int.Parse(val);
+                                    break;
+                            }
                         }
                     }
                 }

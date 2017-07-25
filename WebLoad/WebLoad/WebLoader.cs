@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -8,16 +9,50 @@ namespace WebLoad
     public class WebLoader
     {
         public string ContentType { get; set; }
+        public uint? RepetitionNumber { get; set; }
+
+        private WebData[] _data;
+        
 
         public WebLoader()
         {
-            ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+            Initialize();
         }
 
-        public void Start(WebData[] datas)
+        public WebLoader(params string[] dataFiles)
         {
+            Initialize();
+            var dataFileReader = new DataFileReader();
+            _data = dataFileReader.LoadData(dataFiles);
+        }
+
+        private void Initialize()
+        {
+            this.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+        }
+
+        public void Start(WebData[] data)
+        {
+            var concatinatedData = new List<WebData>();
+            concatinatedData.AddRange(_data);
+            concatinatedData.AddRange(data);
+            PostContinuously(concatinatedData.ToArray());
+        }
+
+        public void Start()
+        {
+            PostContinuously(_data);
+        }
+
+        private void PostContinuously(WebData[] datas)
+        {
+            uint i = 0;
             for (; ; )
             {
+                if (i >= this.RepetitionNumber)
+                {
+                    break;
+                }
                 try
                 {
                     foreach (var d in datas)
@@ -31,6 +66,8 @@ namespace WebLoad
                 {
                     Console.WriteLine(ex.ToString());
                 }
+
+                i += 1;
             }
         }
 
@@ -40,7 +77,7 @@ namespace WebLoad
 
             var request = WebRequest.Create(data.Url) as HttpWebRequest;
             request.Method = "POST";
-            request.ContentType = ContentType;
+            request.ContentType = this.ContentType;
             request.ContentLength = postDataBytes.Length;
             request.CookieContainer = new CookieContainer();
             request.CookieContainer.Add(new Uri(data.CookieUrl), data.Cookies);
