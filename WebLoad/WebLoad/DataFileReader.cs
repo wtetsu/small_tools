@@ -12,23 +12,23 @@ namespace WebLoad
             DataFileSearchPattern = "data*.txt";
         }
 
-        public WebData[] LoadData(params string[] dataFiles)
+        public WebData[] LoadData(params string[] dataEntries)
         {
             var dataList = new List<WebData>();
 
-            foreach (string dataFile in dataFiles)
+            foreach (string dataEntry in dataEntries)
             {
-                if (File.Exists(dataFile))
+                if (File.Exists(dataEntry))
                 {
-                    dataList.Add(WebData.ParseFile(dataFile));
+                    dataList.Add(WebData.ParseFile(dataEntry));
                 }
-                else if (Directory.Exists(dataFile))
+                else if (Directory.Exists(dataEntry))
                 {
-                    dataList.AddRange(FindAndParseDataFilesInDirectory("."));
+                    dataList.AddRange(FindAndParseDataFilesInDirectory(dataEntry));
                 }
                 else
                 {
-                    throw new FileNotFoundException("File not found:" + dataFile);
+                    throw new FileNotFoundException("File not found:" + dataEntry);
                 }
             }
 

@@ -16,6 +16,8 @@ namespace WebLoad
                 loader = new WebLoader(".");
             }
 
+            loader.ParallelNumber = 5;
+
             loader.Start();
         }
     }

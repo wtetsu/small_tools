@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace WebLoad
 {
@@ -10,6 +12,7 @@ namespace WebLoad
     {
         public string ContentType { get; set; }
         public uint? RepetitionNumber { get; set; }
+        public int ParallelNumber { get; set; }
 
         private WebData[] _data;
         
@@ -29,6 +32,8 @@ namespace WebLoad
         private void Initialize()
         {
             this.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+            this.RepetitionNumber = null;
+            this.ParallelNumber = 1;
         }
 
         public void Start(WebData[] data)
@@ -36,12 +41,27 @@ namespace WebLoad
             var concatinatedData = new List<WebData>();
             concatinatedData.AddRange(_data);
             concatinatedData.AddRange(data);
-            PostContinuously(concatinatedData.ToArray());
+            StartCommon(concatinatedData.ToArray());
         }
 
         public void Start()
         {
-            PostContinuously(_data);
+            StartCommon(_data);
+        }
+
+        private void StartCommon(WebData[] data)
+        {
+            if (this.ParallelNumber == 1)
+            {
+                PostContinuously(data);
+            }
+            else
+            {
+                Parallel.For(0, this.ParallelNumber, j =>
+                {
+                    PostContinuously(data);
+                });
+            }
         }
 
         private void PostContinuously(WebData[] datas)
@@ -49,7 +69,7 @@ namespace WebLoad
             uint i = 0;
             for (; ; )
             {
-                if (i >= this.RepetitionNumber)
+                if (this.RepetitionNumber != null && this.RepetitionNumber <= i)
                 {
                     break;
                 }
@@ -57,8 +77,20 @@ namespace WebLoad
                 {
                     foreach (var d in datas)
                     {
-                        string response = Post(d);
-                        Console.WriteLine(response.Length.ToString() + " byte");
+                        HttpWebResponse response = Post(d);
+
+                        string responseString = null;
+                        using (var streamReader = new StreamReader(response.GetResponseStream()))
+                        {
+                            responseString = streamReader.ReadToEnd();
+                        }
+
+                        int tid  = Thread.CurrentThread.ManagedThreadId;
+                        string dt = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff");
+                        string status = response.StatusCode.ToString();
+                        string responseByte = responseString.Length.ToString() + " byte";
+
+                        Console.WriteLine("[{0}][{1}]{2}:{3}", dt, tid, status, responseByte);
                         System.Threading.Thread.Sleep(d.Sleep);
                     }
                 }
@@ -71,7 +103,7 @@ namespace WebLoad
             }
         }
 
-        public string Post(WebData data)
+        public HttpWebResponse Post(WebData data)
         {
             byte[] postDataBytes = Encoding.ASCII.GetBytes(data.PostData);
 
@@ -88,14 +120,7 @@ namespace WebLoad
             }
 
             var response = request.GetResponse() as HttpWebResponse;
-
-            string responseString;
-            using (var streamReader = new StreamReader(response.GetResponseStream()))
-            {
-                responseString = streamReader.ReadToEnd();
-                Console.WriteLine(response.StatusCode);
-            }
-            return responseString;
+            return response;
         }
     }
 }
