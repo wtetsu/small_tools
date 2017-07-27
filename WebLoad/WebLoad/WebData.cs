@@ -26,41 +26,49 @@ namespace WebLoad
                         break;
                     }
 
-                    string[] arr = line.Split('\t');
-
-                    if (arr.Length >= 2)
-                    {
-                        string key = arr[0];
-                        string val = arr[1];
-
-                        if (key.StartsWith("cookie:"))
-                        {
-                            string[] c = key.Split(':');
-                            string name = c[1];
-
-                            var newCookie = new Cookie(name, val);
-                            result.Cookies.Add(newCookie);
-                        }
-                        else
-                        {
-                            switch (key)
-                            {
-                                case "url":
-                                    result.Url = val;
-                                    result.CookieUrl = result.Url.Substring(0, result.Url.IndexOf("/", 7));
-                                    break;
-                                case "postdata":
-                                    result.PostData = val;
-                                    break;
-                                case "sleep":
-                                    result.Sleep = int.Parse(val);
-                                    break;
-                            }
-                        }
-                    }
+                    ParseLine(line, ref result);
                 }
             }
             return result;
+        }
+
+        private static void ParseLine(string line, ref WebData rWebData)
+        {
+            string[] arr = line.Split('\t');
+
+            if (arr.Length < 2)
+            {
+                return;
+            }
+
+            string key = arr[0];
+            string val = arr[1];
+
+            if (key.StartsWith("cookie:"))
+            {
+                string[] c = key.Split(':');
+                string name = c[1];
+
+                var newCookie = new Cookie(name, val);
+                rWebData.Cookies.Add(newCookie);
+            }
+            else
+            {
+                switch (key)
+                {
+                    case "url":
+                        rWebData.Url = val;
+                        rWebData.CookieUrl = val.Substring(0, val.IndexOf("/", 7));
+                        break;
+                    case "postdata":
+                        rWebData.PostData = val;
+                        break;
+                    case "sleep":
+                        rWebData.Sleep = int.Parse(val);
+                        break;
+                }
+            }
+
         }
     }
 }
