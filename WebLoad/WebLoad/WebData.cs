@@ -58,7 +58,7 @@ namespace WebLoad
                 {
                     case "url":
                         rWebData.Url = val;
-                        rWebData.CookieUrl = val.Substring(0, val.IndexOf("/", 7));
+                        rWebData.CookieUrl = val.Substring(0, val.IndexOf("/", 7) + 1);
                         break;
                     case "postdata":
                         rWebData.PostData = val;
