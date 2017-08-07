@@ -105,19 +105,23 @@ namespace WebLoad
 
         public HttpWebResponse Post(WebData data)
         {
-            byte[] postDataBytes = Encoding.ASCII.GetBytes(data.PostData);
-
             var request = WebRequest.Create(data.Url) as HttpWebRequest;
-            request.Method = "POST";
+            request.Method = data.Method;
             request.ContentType = this.ContentType;
-            request.ContentLength = postDataBytes.Length;
             request.CookieContainer = new CookieContainer();
             request.CookieContainer.Add(new Uri(data.CookieUrl), data.Cookies);
 
-            using (Stream requestStream = request.GetRequestStream())
+            long contentLength = 0;
+            if (data.PostData != null)
             {
-                requestStream.Write(postDataBytes, 0, postDataBytes.Length);
+                byte[] postDataBytes = Encoding.ASCII.GetBytes(data.PostData);
+                using (Stream requestStream = request.GetRequestStream())
+                {
+                    requestStream.Write(postDataBytes, 0, postDataBytes.Length);
+                }
+                contentLength = postDataBytes.Length;
             }
+            request.ContentLength = contentLength;
 
             var response = request.GetResponse() as HttpWebResponse;
             return response;

@@ -10,6 +10,12 @@ namespace WebLoad
         public string PostData { get; set; }
         public CookieCollection Cookies { get; set; }
         public int Sleep { get; set; }
+        public string Method { get; set; }
+
+        public WebData()
+        {
+            this.Method = "POST";
+        }
 
         public static WebData ParseFile(string dataFile)
         {
@@ -65,6 +71,9 @@ namespace WebLoad
                         break;
                     case "sleep":
                         rWebData.Sleep = int.Parse(val);
+                        break;
+                    case "method":
+                        rWebData.Method = val;
                         break;
                 }
             }
