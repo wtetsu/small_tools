@@ -121,7 +121,10 @@ namespace WebLoad
                 }
                 contentLength = postDataBytes.Length;
             }
-            request.ContentLength = contentLength;
+            else
+            {
+                request.ContentLength = contentLength;
+            }
 
             var response = request.GetResponse() as HttpWebResponse;
             return response;
