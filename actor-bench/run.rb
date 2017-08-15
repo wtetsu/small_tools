@@ -52,14 +52,14 @@ if __FILE__ == $0
   bench_list = []
   bench_list.push(Bench.new(
     "D",
-    "dmd -O actor_bench.d",
-    "actor_bench.exe",
+    "dmd -O actor_bench.d -ofactor_bench_d",
+    "./actor_bench_d",
     "dmd --version",
   ))
   bench_list.push(Bench.new(
     "C#",
-    "csc -o actor_bench.cs",
-    "actor_bench.exe",
+    "csc -o -out:actor_bench_cs.exe actor_bench.cs",
+    "./actor_bench_cs",
     "msbuild /version",
   ))
   runner = Runner.new
