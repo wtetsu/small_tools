@@ -1,13 +1,42 @@
 require "Open3"
 
-class Runner
-  def run
+class Bench
+  attr_accessor :name
+  attr_accessor :build_command
+  attr_accessor :execute_command
+  attr_accessor :version_command
+
+  def initialize(name, build_command, execute_command, version_command)
+    @name = name
+    @build_command = build_command
+    @execute_command = execute_command
+    @version_command = version_command
   end
 end
 
-class Builder
-  def run
-    start_process("dmd -O actor_bench.d")
+class Runner
+  def run(bench_list)
+    build_all(bench_list)
+    execute_all(bench_list)
+  end
+
+  def build_all(bench_list)
+    bench_list.each {|bench|
+      start_process(bench.build_command)
+    }
+  end
+
+  def execute_all(bench_list)
+    bench_list.each {|bench|
+      begin_time = Time.new
+      start_process(bench.execute_command)
+      end_time = Time.new
+      duration = ((end_time.to_f - begin_time.to_f) * 1000).round()
+
+      puts "* #{bench.name}"
+      puts "#{duration} ms"
+      puts start_process(bench.version_command)
+    }
   end
 
   def start_process(cmd)
@@ -15,9 +44,24 @@ class Builder
     if s.exitstatus != 0
       raise e
     end
+    return o
   end
 end
 
-Builder.new.run
-Runner.new.run
-
+if __FILE__ == $0
+  bench_list = []
+  bench_list.push(Bench.new(
+    "D",
+    "dmd -O actor_bench.d",
+    "actor_bench.exe",
+    "dmd --version",
+  ))
+  bench_list.push(Bench.new(
+    "C#",
+    "csc -o actor_bench.cs",
+    "actor_bench.exe",
+    "msbuild /version",
+  ))
+  runner = Runner.new
+  runner.run(bench_list)
+end
