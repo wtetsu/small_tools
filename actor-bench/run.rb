@@ -1,4 +1,5 @@
 require "Open3"
+require "yaml"
 
 class Bench
   attr_accessor :name
@@ -22,12 +23,15 @@ class Runner
 
   def build_all(bench_list)
     bench_list.each {|bench|
+      puts "building... #{bench.name}"
       start_process(bench.build_command)
     }
   end
 
   def execute_all(bench_list)
     bench_list.each {|bench|
+      puts "executing... #{bench.name}"
+
       begin_time = Time.new
       start_process(bench.execute_command)
       end_time = Time.new
@@ -50,18 +54,14 @@ end
 
 if __FILE__ == $0
   bench_list = []
-  bench_list.push(Bench.new(
-    "D",
-    "dmd -O actor_bench.d -ofactor_bench_d",
-    "./actor_bench_d",
-    "dmd --version",
-  ))
-  bench_list.push(Bench.new(
-    "C#",
-    "csc -o -out:actor_bench_cs.exe actor_bench.cs",
-    "./actor_bench_cs",
-    "msbuild /version",
-  ))
-  runner = Runner.new
-  runner.run(bench_list)
+  data = YAML.load_file("run.yml").shuffle
+  data.each {|b|
+    bench_list.push(Bench.new(
+      b["name"],
+      b["build_command"],
+      b["execute_command"],
+      b["version_command"],
+    ))
+  }
+  Runner.new.run(bench_list)
 end

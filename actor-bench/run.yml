@@ -1,0 +1,8 @@
+- name: "D"
+  build_command: "dmd -O actor_bench.d -ofactor_bench_d"
+  execute_command: "./actor_bench_d"
+  version_command: "dmd --version"
+- name: "C#"
+  build_command: "csc -o -out:actor_bench_cs.exe actor_bench.cs"
+  execute_command: "./actor_bench_cs"
+  version_command: "msbuild /version"
