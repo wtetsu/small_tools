@@ -3,11 +3,6 @@
 require "open3"
 require "systemu"
 
-if ARGV.length < 2
-  puts "Usage: command executable watchfile"
-  exit 1
-end
-
 def kill(pid)
   begin
     Process.kill("TERM", pid)
@@ -51,9 +46,33 @@ def main(command, watch_files)
   end
 end
 
+EXECUTABLES = {
+  ".py" => "python",
+  ".rb" => "python",
+  ".js" => "node",
+}
+
 if __FILE__ == $0
-  command = ARGV[0]
-  watchfile_patterns = ARGV[1..ARGV.length-1]
+  if ARGV.length < 1
+    puts "Usage: command executable watchfile"
+    exit 1
+  end
+
+  if ARGV.length == 0
+    exit 1
+  elsif ARGV.length == 1
+    watchfile = ARGV[0]
+    ext = File.extname(watchfile).downcase
+    executable = EXECUTABLES[ext]
+    if executable.nil?
+      exit 1
+    end
+    command = "#{executable} #{watchfile}"
+    watchfile_patterns = [watchfile]
+  else
+    command = ARGV[0]
+    watchfile_patterns = ARGV[1..ARGV.length-1]
+  end
   watch_files = watchfile_patterns.map{|p|Dir[p]}.flatten.select{|f|File.file?(f)}
   puts watch_files
 
