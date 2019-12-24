@@ -48,7 +48,7 @@ end
 
 EXECUTABLES = {
   ".py" => "python",
-  ".rb" => "python",
+  ".rb" => "ruby",
   ".js" => "node",
 }
 
