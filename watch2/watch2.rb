@@ -50,6 +50,7 @@ EXECUTABLES = {
   ".py" => "python",
   ".rb" => "ruby",
   ".js" => "node",
+  ".sh" => "sh",
 }
 
 if __FILE__ == $0
