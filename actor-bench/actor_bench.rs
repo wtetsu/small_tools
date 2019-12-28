@@ -1,19 +1,25 @@
 use std::time::Instant;
-
+use std::env;
 const LEN: usize = 10000;
-const TIMES: usize = 30000;
 
 fn main() {
+  let args: Vec<String> = env::args().collect();
+  if args.len() <= 1 {
+    return;
+  }
+
+  let num = args[1].parse().unwrap();
+
   let now = Instant::now();
 
   let mut list : Vec< Actor> = Vec::new();
 
   for i in 0..LEN {
     let f = i as f64;
-    list.push( Actor{x:0.0, y:0.0, vx:0.000001*f, vy:0.000002*f});
+    list.push( Actor{x:f/10.0, y: f*2.0/10.0, vx:f/100.0, vy: f*2.0/100.0});
   }
 
-  for _i in 0..TIMES {
+  for _i in 0..num {
     for j in 0..LEN {
       let actor = &mut list[j];
       actor.update();

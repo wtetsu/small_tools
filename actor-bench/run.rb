@@ -16,9 +16,9 @@ class Bench
 end
 
 class Runner
-  def run(bench_list)
+  def run(bench_list, num)
     build_all(bench_list)
-    execute_all(bench_list)
+    execute_all(bench_list, num)
   end
 
   def build_all(bench_list)
@@ -28,22 +28,26 @@ class Runner
     }
   end
 
-  def execute_all(bench_list)
+  def execute_all(bench_list, num)
     bench_list.each {|bench|
-      puts "executing... #{bench.name}"
+      puts "* #{bench.name}"
+      # puts "executing... #{bench.name}"
 
       begin_time = Time.new
-      start_process(bench.execute_command)
+      start_process(bench.execute_command + " #{num}")
       end_time = Time.new
       duration = ((end_time.to_f - begin_time.to_f) * 1000).round()
 
-      puts "* #{bench.name}"
       puts "#{duration} ms"
-      puts start_process(bench.version_command)
+      # puts start_process(bench.version_command)
+      puts
     }
   end
 
   def start_process(cmd)
+    if cmd.nil?
+      return
+    end
     o, e, s = Open3.capture3(cmd)
     if s.exitstatus != 0
       raise e
@@ -63,5 +67,6 @@ if __FILE__ == $0
       b["version_command"],
     ))
   }
-  Runner.new.run(bench_list)
+  num = ARGV[0].to_i
+  Runner.new.run(bench_list, num)
 end
