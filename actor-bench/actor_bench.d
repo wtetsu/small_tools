@@ -28,8 +28,8 @@ void go() {
     }
   }
   
-  writeln(list[5000].x);
-  writeln(list[5000].y);
+  writefln("%.14f", list[5000].x);
+  writefln("%.14f", list[5000].y);
 }
 
 

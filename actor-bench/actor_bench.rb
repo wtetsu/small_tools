@@ -35,5 +35,5 @@ actors = create_actors(10000)
   update_all(actors)
 }
 
-puts actors[100].x
-puts actors[100].y
+puts actors[5000].x
+puts actors[5000].y
