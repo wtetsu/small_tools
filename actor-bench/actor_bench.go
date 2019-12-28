@@ -1,51 +1,62 @@
 package main
 
-import "fmt"
-import "time"
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"time"
+)
 
-func plus(a, b int)(int, int, int) {
-  return a, b, a+b;
+func plus(a, b int) (int, int, int) {
+	return a, b, a + b
 }
 
 type Actor struct {
-	x float32
-	y float32
+	x  float32
+	y  float32
 	vx float32
 	vy float32
 }
 
 func update(actor *Actor) {
-	actor.x += actor.vx;
-	actor.y += actor.vy;
+	actor.x += actor.vx
+	actor.y += actor.vy
 }
 
 func main() {
-	time0 := time.Now()
+	if len(os.Args) <= 1 {
+		return
+	}
+
+	num, err := strconv.Atoi(os.Args[1])
+
+	if err != nil {
+		return
+	}
+
+	start := time.Now()
 
 	const LEN = 10000
-	const TIMES = 30000
-	list := make([]*Actor, LEN)
+	list := make([]*Actor, 10000)
 
 	for i := 0; i < LEN; i++ {
 		newActor := Actor{}
-		newActor.x = 0
-		newActor.y = 0
-	    newActor.vx = 0.000001 * float32(i)
-	    newActor.vy = 0.000002 * float32(i)
+		newActor.x = float32(i) / 10.0
+		newActor.y = (float32(i) * 2) / 10.0
+		newActor.vx = float32(i) / 100.0
+		newActor.vy = (float32(i) * 2) / 100.0
+
 		list[i] = &newActor
 	}
 
-	for i := 0; i < TIMES; i++ {
+	for i := 0; i < num; i++ {
 		for j := 0; j < LEN; j++ {
 			update(list[j])
 		}
 	}
 
-	time1 := time.Now()
-	dur := time1.Sub(time0)
+	fmt.Println(time.Since(start).Nanoseconds() / 10000)
 
-	fmt.Println(dur)
-
-	fmt.Println(list[5000].x)
-	fmt.Println(list[5000].y)
+	// fmt.Println(list[5000].x)
+	// fmt.Println(list[5000].y)
 }

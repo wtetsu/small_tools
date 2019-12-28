@@ -29,11 +29,21 @@ def update_all(actors)
   }
 end
 
+if __FILE__ == $0
+  if ARGV.length <= 0
+    exit(1)
+  end
 
-actors = create_actors(10000)
-10000.times {
-  update_all(actors)
-}
+  start = Time.now
 
-puts actors[5000].x
-puts actors[5000].y
+  actors = create_actors(10000)
+  (ARGV[0].to_i).times {
+    update_all(actors)
+  }
+
+  puts (Time.now - start)*1000
+  
+  # puts actors[5000].x
+  # puts actors[5000].y
+end
+

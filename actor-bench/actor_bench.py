@@ -1,3 +1,7 @@
+import sys
+import time
+
+
 class Actor:
     def __init__(self):
         self.x = 0
@@ -28,8 +32,17 @@ def update_all(actors):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) <= 1:
+        sys.exit(1)
+    num = int(sys.argv[1])
+
+    start_time = time.time()
+
     actors = create_actors(10000)
-    for i in range(0, 10000):
+    for i in range(0, num):
         update_all(actors)
-    print(actors[5000].x)
-    print(actors[5000].y)
+
+    print((time.time() - start_time)*1000)
+
+    # print(actors[5000].x)
+    # print(actors[5000].y)

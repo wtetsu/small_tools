@@ -30,12 +30,10 @@ namespace ActorBench
             {
                 var newActor = new Actor()
                 {
-                    //X = i / 10.0f,
-                    //Y = i * 2 / 10.0f,
-                    //Vx = i / 100.0f,
-                    //Vy = i * 2 / 100.0f,
-                    Vx = 0.000001 * i,
-                    Vy = 0.000002 * i,
+                    X = i / 10.0,
+                    Y = (i * 2) / 10.0,
+                    Vx = i / 100.0,
+                    Vy = (i * 2) / 100.0,
                 };
                 list.Add(newActor);
             }
@@ -70,23 +68,24 @@ namespace ActorBench
 
         static void Main(string[] args)
         {
+            if (args.Length <= 0) {
+                return;
+            }
             var time0 = DateTime.Now;
 
             var actors = CreateActors(10000);
-            for (int i = 0; i < 30000; i++)
+            
+            int num = int.Parse(args[0]);
+
+            for (int i = 0; i < num; i++)
             {
                 UpdateAll(actors);
-
-                if (i % 1000 == 0)
-                {
-                    Console.WriteLine(i);
-                }
             }
 
             var time1 = DateTime.Now;
 
-            Console.WriteLine(actors[5000].X);
-            Console.WriteLine(actors[5000].Y);
+            // Console.WriteLine(actors[5000].X);
+            // Console.WriteLine(actors[5000].Y);
 
             Console.WriteLine((time1.Ticks - time0.Ticks) / 10000);
         }

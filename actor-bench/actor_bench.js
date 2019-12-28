@@ -1,95 +1,54 @@
-var Actor = function() {
-  this.x = 0;
-  this.y = 0;
-  this.vx = 0;
-  this.vy = 0;
-};
-Actor.prototype.update = function() {
-  this.x += this.vx;
-  this.y += this.vy;
-};
-
-var time1 = new Date();
-
-var LEN = 10000;
-var TIMES = 30000;
-
-var i, j;
-
-list = [];
-list.length = LEN;
-for (i = 0; i < LEN; i++) {
-  var a = new Actor();
-  a.vx = 0.000001 * i;
-  a.vy = 0.000002 * i;
-  list[i] = a;
-}
-
-for (j = 0; j < TIMES; j++) {
-  for (i = 0; i < LEN; i++) {
-    var a = list[i];
-    a.update();
-  }
-}
-
-var time2 = new Date();
-
-function puts(msg) {
-  console.warn(msg);
-}
-
-puts(list[5000].x);
-puts(list[5000].y);
-
-//var time = (time2.getTime() - time1.getTime());
-//var div = document.getElementById("area");
-//div.innerText = time.toString();
-
-/*
-import std.stdio;
-import std.datetime;
-
-void main() {
-  auto t1 = Clock.currTime;
-  go();
-  auto t2 = Clock.currTime;
-  writeln( t2 - t1 );
-}
-
-void go() {
-  const int LEN = 10000;
-  const int TIMES = 30000;
-  
-  Actor[] list;
-  list.length = LEN;
-  for (int i = 0; i < LEN; i++) {
-    Actor a = new Actor();
-    a.vx = 0.000001 * i;
-    a.vy = 0.000002 * i;
-    list[i] = a;
-  }
-  
-  for (int j = 0; j < TIMES; j++) {
-    for (int i = 0; i < LEN; i++) {
-      Actor a = list[i];
-      a.update();
-    }
-  }
-  
-  writeln(list[5000].x);
-  writeln(list[5000].y);
-}
-
-
 class Actor {
-  public float x = 0;
-  public float y = 0;
-  public float vx = 0;
-  public float vy = 0;
-  
-  public void update() {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.vx = 0;
+    this.vy = 0;
+  }
+
+  update() {
     this.x += this.vx;
     this.y += this.vy;
   }
 }
-*/
+
+const createActors = num => {
+  const actors = [];
+  for (let i = 0; i < num; i++) {
+    var newActor = new Actor();
+    newActor.x = i / 10.0;
+    newActor.y = (i * 2) / 10.0;
+    newActor.vx = i / 100.0;
+    newActor.vy = (i * 2) / 100.0;
+    actors.push(newActor);
+  }
+  return actors;
+};
+
+const updateAll = actors => {
+  for (i = 0; i < actors.length; i++) {
+    const actor = actors[i];
+    actor.update();
+  }
+};
+
+const main = () => {
+  if (process.argv.length <= 2) {
+    return 1;
+  }
+  const start = new Date().getTime();
+
+  const actors = createActors(10000);
+
+  const num = parseInt(process.argv[2], 10);
+  for (j = 0; j < num; j++) {
+    updateAll(actors);
+  }
+
+  console.info(new Date().getTime() - start);
+
+  console.info(actors[5000].x);
+  console.info(actors[5000].y);
+};
+
+main();

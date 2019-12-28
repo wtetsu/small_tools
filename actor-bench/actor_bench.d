@@ -1,37 +1,49 @@
 import std.stdio;
+import std.conv;
 import std.datetime;
 
-void main() {
+void main(string[] args) {
+  if (args.length <= 1) {
+    return;
+  }
+  int num = to!int(args[1]);
+
   auto t1 = Clock.currTime;
-  go();
+
+  Actor[] actors = createActors(10000);
+  
+  for (int j = 0; j < num; j++) {
+    updateAll(actors);
+  }
+  
+  // writefln("%.14f", actors[5000].x);
+  // writefln("%.14f", actors[5000].y);
+
   auto t2 = Clock.currTime;
-  writeln( t2 - t1 );
+
+  writeln( (t2.stdTime - t1.stdTime)/10000 );
 }
 
-void go() {
-  const int LEN = 10000;
-  const int TIMES = 30000;
-  
-  Actor[] list;
-  list.length = LEN;
-  for (int i = 0; i < LEN; i++) {
-    Actor a = new Actor();
-    a.vx = 0.000001 * i;
-    a.vy = 0.000002 * i;
-    list[i] = a;
+Actor[] createActors(int num) {
+  Actor[] actors;
+  actors.length = num;
+  for (int i = 0; i < num; i++) {
+    Actor newActor = new Actor();
+    newActor.x = i / 10.0;
+    newActor.y = (i * 2) / 10.0;
+    newActor.vx = i / 100.0;
+    newActor.vy = (i * 2) / 100.0;
+
+    actors[i] = newActor;
   }
-  
-  for (int j = 0; j < TIMES; j++) {
-    for (int i = 0; i < LEN; i++) {
-      Actor a = list[i];
-      a.update();
-    }
-  }
-  
-  writefln("%.14f", list[5000].x);
-  writefln("%.14f", list[5000].y);
+  return actors;
 }
 
+void updateAll(Actor[] actors) {
+  for (int i = 0; i < actors.length; i++) {
+    actors[i].update();
+  }
+}
 
 class Actor {
   public double x = 0;
