@@ -26,8 +26,9 @@ def make_data(name: str, code: str) -> str:
     return f'"{name}": {json.dumps(content, indent=4, ensure_ascii=False)},'
 
 
-def convert_code(code: str) -> list[str]:
-    lines = remove_empty_lines(code.splitlines())
+def convert_code(raw_code: str) -> list[str]:
+    escaped_code = raw_code.replace("$", "$$")
+    lines = remove_empty_lines(escaped_code.splitlines())
 
     common_indent = detect_common_indent(lines)
     if not common_indent:
